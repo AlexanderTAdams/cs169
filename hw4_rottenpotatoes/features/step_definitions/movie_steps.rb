@@ -8,12 +8,6 @@ Given /the following movies exist/ do |movies_table|
   end
 end
 
-Then /^the director of "([^"]*)" should be "([^"]*)"$/ do |m, dir|
-  page.should have_xpath('.//li', :text => /^Director:\s*#{dir}/)
-  step %Q{I should see "#{m}"}
-  step %Q{I should see "#{dir}"}
-end
-
 And /^I add the movie:(.*)$/ do |movie_details|
   details = movie_details.to_s.gsub(/\s/, "").split(",")
   t = details[0]
@@ -109,4 +103,10 @@ And /^the following checkboxes should (not )?be checked: (.*)$/ do |un, rating_l
   rating_list.to_s.gsub(/\s/, "").split(",").each do |r|
     step %Q{the "ratings_#{r}" checkbox should #{un}be checked}
   end
+end
+
+Then /^the director of "([^"]*)" should be "([^"]*)"$/ do |m, dir|
+  page.should have_xpath('.//li', :text => /^Director:\s*#{dir}/)
+  step %Q{I should see "#{m}"}
+  step %Q{I should see "#{dir}"}
 end
