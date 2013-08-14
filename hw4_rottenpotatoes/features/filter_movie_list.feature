@@ -43,3 +43,9 @@ Scenario: all ratings selected
   When I check the following ratings: PG, R, PG-13, G, NC-17
   And I press "Refresh"
   Then I should see all of the movies
+  
+Scenario: no ratings selected
+  # see assignment
+  Given I am on the RottenPotatoes homepage
+  When I press "Refresh"
+  Then I should see none of the movies

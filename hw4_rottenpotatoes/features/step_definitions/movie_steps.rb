@@ -7,7 +7,18 @@ Given /the following movies exist/ do |movies_table|
     Movie.create(movie)
   end
 end
+#/////////////////////////////////////////////////////////
+Then /^the director of "([^"]*)" should be "([^"]*)"$/ do |movie, director|
+  Movie.find_by_title(movie).director.should == director
+end
 
+Then /I should see "(.*)" before "(.*)"/ do |movie1, movie2|
+  assert (page.body =~ /#{movie1}/) < (page.body =~ /#{movie2}/)
+end
+
+Then /I should not see "(.*)" before "(.*)"/ do |movie1, movie2|
+  assert (page.body =~ /#{movie1}/) > (page.body =~ /#{movie2}/)
+end
 And /^I add the movie:(.*)$/ do |movie_details|
   details = movie_details.to_s.gsub(/\s/, "").split(",")
   t = details[0]
@@ -91,13 +102,51 @@ Then /^I should not see movies with the ratings: (.*)$/ do |rating_list|
     #step %Q{I should not see /^#{rating}$/ within the movies table}
   #end
 end
-
+Then /^I should see (none|all) of the movies$/ do |should|
+    rows = page.all("table#movies tbody tr td[1]").map {|t| t.text}
+    if should == "none"
+        assert rows.size == 0
+    else
+        assert rows.size == Movie.all.count
+    end
+end
+=begin
 Then /^I should see all of the movies/ do
   movie_count = Movie.all.count
   row_count = page.all('tbody/tr').count
   row_count.should == movie_count
 end
 
+#///////////////////////////////////////////
+#Then /I should not see any of the movies/ do
+#  rows = page.all('#movies tr').size - 1
+#  assert rows == 0
+#end
+
+Then /^I should see none of the movies/ do
+  assert rows.size == 0
+  movie_count = Movie.all.count
+  row_count = page.all('tbody/tr').count
+  row_count.should == movie_count
+end
+
+
+Then /I should see all of the movies/ do
+  flunk 'It does not show the correct number of movies' unless page.has_selector?('table#movies tr', :count => 11)
+  steps %Q{
+    Then I should see "Aladdin"
+    And I should see "The Terminator"
+    And I should see "When Harry Met Sally"
+    And I should see "The Help"
+    And I should see "Chocolat"
+    And I should see "Amelie"
+    And I should see "2001: A Space Odyssey"
+    And I should see "The Incredibles"
+    And I should see "Raiders of the Lost Ark"
+    And I should see "Chicken Run"
+  }
+end
+=end
 And /^the following checkboxes should (not )?be checked: (.*)$/ do |un, rating_list|
   # We have captured the ratings that we want displayed
   rating_list.to_s.gsub(/\s/, "").split(",").each do |r|
@@ -105,8 +154,19 @@ And /^the following checkboxes should (not )?be checked: (.*)$/ do |un, rating_l
   end
 end
 
+=begin
+Then /^I should see (none|all) of the movies$/ do |should|
+    rows = page.all("table#movies tbody tr td[1]").map {|t| t.text}
+    if should == "none"
+        assert rows.size == 0
+    else
+        assert rows.size == Movie.all.count
+    end
+end
+
 Then /^the director of "([^"]*)" should be "([^"]*)"$/ do |m, dir|
   page.should have_xpath('.//li', :text => /^Director:\s*#{dir}/)
   step %Q{I should see "#{m}"}
   step %Q{I should see "#{dir}"}
 end
+=end
